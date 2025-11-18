@@ -25,3 +25,8 @@ type PullRequest struct {
 	CreatedAt 		time.Time `db:"created_at"`
 	MergedAt 		*time.Time `db:"merged_at,omitempty"` // TODO: подумать над омитемпти
 }
+
+type Team struct {
+	TeamName string `db:"team_name"`
+	Members []User 
+}

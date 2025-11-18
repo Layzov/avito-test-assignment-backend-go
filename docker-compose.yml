@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: avito-test-assignment-postgres
+    ports:
+      - "5438:5432"
+    environment:
+      - POSTGRES_DB=avito_db
+      - POSTGRES_PASSWORD=avito_test
+      - POSTGRES_USER=admin
+    image: postgres:latest
