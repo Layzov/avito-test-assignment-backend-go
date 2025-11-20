@@ -3,6 +3,7 @@ package main
 import (
 	"avito-test-assignment-backend/internal/config"
 	"avito-test-assignment-backend/internal/http-server/handlers/teams/add"
+	"avito-test-assignment-backend/internal/service"
 	"avito-test-assignment-backend/internal/storage/postgres"
 	slogpretty "avito-test-assignment-backend/pkg/handlers/slogPretty"
 	"avito-test-assignment-backend/pkg/middleware/mwLogger"
@@ -35,7 +36,10 @@ func main() {
 		log.Error("Failed to init storage", sl.Err(err))
 		os.Exit(1)
 	}
-	_ = storage
+
+	service := service.NewTeamService(storage)
+
+	_, _ = storage, service
 
 	router := chi.NewRouter()
 
@@ -45,7 +49,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/team/add", add.New(log, storage))
+	router.Post("/team/add", add.New(log, service))
 
 	log.Info("Starting HTTP server", slog.String("addr", cfg.Address))
 

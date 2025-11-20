@@ -1,52 +1,64 @@
 package response
 
-import (
-	"fmt"
-	"strings"
-	"github.com/go-playground/validator/v10"
-)
+import "errors"
+
+// import (
+// 	"fmt"
+// 	"strings"
+// 	"github.com/go-playground/validator/v10"
+// )
 
 type Response struct {
-	Status string `json:"resp_status"`
-	Error  string `json:"error,omitempty"`
+	ResponseError `json:"error,omitzero"`
 }
 
-const (
-	StatusOK    = "OK"
-	StatusError = "Error"
+type ResponseError struct {
+	Code string `json:"code"`
+	Message  string `json:"message"`
+}
+
+//Error Codes
+type ErrCode string 
+var (
+	FAILED_REQUEST ErrCode = "REQUEST_FAILED"
+	BAD_REQUEST ErrCode = "FAILED_TO_DECODE"
+	TEAM_EXISTS ErrCode = "TEAM_EXISTS"
+	NOT_FOUND ErrCode = "NOT_FOUND"
 )
 
-func OK() Response {
+var (
+	ErrBadRequest = errors.New("bad request")
+	ErrInvalidId = errors.New("invalid user_id")
+	ErrTeamExists = errors.New("team_name already exists")
+)
+
+func Error(code, msg string) Response {
 	return Response{
-		Status: StatusOK,
+		ResponseError: ResponseError{
+			Code:    code,
+			Message: msg,
+		},
 	}
-}
+}	
 
-func Error(msg string) Response {
-	return Response{
-		Status: StatusError,
-		Error:  msg,
-	}
-}
+// func ValidationError(errs validator.ValidationErrors) Response {
+// 	var errMsg []string
 
-func ValidationError(errs validator.ValidationErrors) Response {
-	var errMsg []string
+// 	for _, err := range errs {
+// 		switch err.ActualTag() {
+// 		case "required":
+// 			errMsg = append(errMsg, fmt.Sprintf("Field '%s' is required", err.Field()))
+// 		case "min":
+// 			errMsg = append(errMsg, fmt.Sprintf("Field '%s' must be at least %s characters long", err.Field(), err.Param()))
+// 		case "max":
+// 			errMsg = append(errMsg, fmt.Sprintf("Field '%s' must be at most %s characters long", err.Field(), err.Param()))
+// 		default:
+// 			errMsg = append(errMsg, fmt.Sprintf("Field '%s' is invalid", err.Field()))
+// 		}
+// 	}
 
-	for _, err := range errs {
-		switch err.ActualTag() {
-		case "required":
-			errMsg = append(errMsg, fmt.Sprintf("Field '%s' is required", err.Field()))
-		case "min":
-			errMsg = append(errMsg, fmt.Sprintf("Field '%s' must be at least %s characters long", err.Field(), err.Param()))
-		case "max":
-			errMsg = append(errMsg, fmt.Sprintf("Field '%s' must be at most %s characters long", err.Field(), err.Param()))
-		default:
-			errMsg = append(errMsg, fmt.Sprintf("Field '%s' is invalid", err.Field()))
-		}
-	}
-
-	return Response{
-		Status: StatusError,
-		Error:  strings.Join(errMsg, ", "),
-	}
-}
+// 	return Response{
+// 		Status: StatusError,
+// 		Error:  strings.Join(errMsg, ", "),
+// 	}
+// }
