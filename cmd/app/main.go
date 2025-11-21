@@ -3,6 +3,8 @@ package main
 import (
 	"avito-test-assignment-backend/internal/config"
 	"avito-test-assignment-backend/internal/http-server/handlers/teams/add"
+	"avito-test-assignment-backend/internal/http-server/handlers/teams/get"
+	"avito-test-assignment-backend/internal/http-server/handlers/users/set"
 	"avito-test-assignment-backend/internal/service"
 	"avito-test-assignment-backend/internal/storage/postgres"
 	slogpretty "avito-test-assignment-backend/pkg/handlers/slogPretty"
@@ -37,7 +39,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	service := service.NewTeamService(storage)
+	service := service.NewService(storage)
 
 	_, _ = storage, service
 
@@ -50,6 +52,8 @@ func main() {
 	router.Use(middleware.URLFormat)
 
 	router.Post("/team/add", add.New(log, service))
+	router.Get("/team/get/{team_name}", get.New(log, service))
+	router.Get("/users/setIsActive", set.New(log, service))
 
 	log.Info("Starting HTTP server", slog.String("addr", cfg.Address))
 

@@ -30,6 +30,7 @@ var (
 	ErrBadRequest = errors.New("bad request")
 	ErrInvalidId = errors.New("invalid user_id")
 	ErrTeamExists = errors.New("team_name already exists")
+	ErrNotFound = errors.New("resource not found")
 )
 
 func Error(code, msg string) Response {

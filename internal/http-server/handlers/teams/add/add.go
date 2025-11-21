@@ -17,7 +17,7 @@ import (
 )
 
 
-type TeamChecker interface {
+type TeamAdder interface {
 	AddTeamService(ctx context.Context, t models.Team) error
 }
 
@@ -30,9 +30,9 @@ type Response struct {
 	api.Team `json:"team,omitempty"`
 }
 
-func New(log *slog.Logger, teamChecker TeamChecker) http.HandlerFunc {
+func New(log *slog.Logger, teamAdder TeamAdder) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.teams.post.add.New"
+		const op = "handlers.teams.add.add.New"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -68,7 +68,7 @@ func New(log *slog.Logger, teamChecker TeamChecker) http.HandlerFunc {
 			return
 		}
 		
-		err := teamChecker.AddTeamService(r.Context(), *mappedTeam)
+		err := teamAdder.AddTeamService(r.Context(), *mappedTeam)
 
 		if errors.Is(err, response.ErrTeamExists) {
 			log.Error("team_name already exists", sl.Err(err))
@@ -87,6 +87,7 @@ func New(log *slog.Logger, teamChecker TeamChecker) http.HandlerFunc {
 		}
 
 		log.Info("Team added", slog.Any("team", req.Team))
+		
 		responseOK(w, r, &req.Team)
 	}	
 
@@ -101,16 +102,17 @@ func responseOK(w http.ResponseWriter, r *http.Request, team *api.Team) {
 func Mapper(t api.Team) (*models.Team, error) {
 	const op = "handlers.teams.post.add.Maper"
 	users := make([]models.User, 0, len(t.Members))
+	fmt.Println(len(t.Members))
 	reqRegex := regexp.MustCompile(`^u[1-9][0-9]*$`)
 
 	for _, member := range t.Members {
 		
 		if member.UserID == "" {
-            return nil, fmt.Errorf("%s: %s", op, response.ErrInvalidId)
+            return nil, fmt.Errorf("%s: %w", op, response.ErrInvalidId)
         }
         
         if !reqRegex.MatchString(member.UserID) {
-            return nil, fmt.Errorf("%s: %s", op, response.ErrInvalidId)
+            return nil, fmt.Errorf("%s: %w", op, response.ErrInvalidId)
         }
         
         users = append(users, models.User{
