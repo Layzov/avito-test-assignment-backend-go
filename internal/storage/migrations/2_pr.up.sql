@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES users(user_id) ON DELETE RESTRICT
 )
-
+;
 CREATE INDEX IF NOT EXISTS idx_author_id ON pull_requests (author_id);
 CREATE INDEX IF NOT EXISTS idx_status ON pull_requests (pr_status);
 
@@ -39,6 +39,6 @@ CREATE TABLE IF NOT EXISTS pr_reviewers (
     assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (pull_request_id, reviewer_id)
 )
-
+;
 CREATE INDEX IF NOT EXISTS idx_pr_reviewers ON pr_reviewers (reviewer_id);
 CREATE INDEX IF NOT EXISTS idx_pr_reviewers_pr ON pr_reviewers (pull_request_id);

@@ -23,8 +23,7 @@ type HTTPServer struct {
 func MustLoad() *Config {
 	var cfg Config
 
-	// default path: .\config\config.env
-	configPath := ".\\config\\config.yaml"
+	configPath := ".\\cmd\\app\\config\\config.yaml"
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("Config file does not exist: %s", configPath)
