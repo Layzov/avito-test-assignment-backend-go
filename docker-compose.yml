@@ -8,3 +8,15 @@ services:
       - POSTGRES_PASSWORD=avito_test
       - POSTGRES_USER=admin
     image: postgres:latest
+
+  app:
+    container_name: avito-test-assignment-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: avito-test-assignment-backend:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
